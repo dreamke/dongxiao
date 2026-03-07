@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>G调洞箫练习助手 🎋</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-card: #0f3460;
+            --accent: #e94560;
+            --accent-light: #ff6b6b;
+            --text-primary: #f1f1f1;
+            --text-secondary: #a0a0a0;
+            --success: #4ecca3;
+            --warning: #ffc93c;
+            --border: #2a2a4a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--accent-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .tune-key {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+        }
+
+        .card-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        /* 调性选择 */
+        .key-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .key-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .key-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .key-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* 调音器样式 */
+        .tuner-display {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .note-display-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .note-display-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .note-display {
+            font-size: 5rem;
+            font-weight: 700;
+            font-family: 'Noto Serif SC', serif;
+            transition: color 0.3s;
+            line-height: 1.2;
+        }
+
+        .note-display .jianpu-high::after {
+            font-size: 0.4em;
+            top: -0.2em;
+        }
+
+        .note-display .jianpu-low::after {
+            font-size: 0.4em;
+            bottom: -0.3em;
+        }
+
+        .stability-timer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            min-width: 60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            position: absolute;
+            right: 10%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .stability-timer.active {
+            opacity: 1;
+        }
+
+        .stability-timer.stable {
+            background: rgba(78, 204, 163, 0.2);
+            border-color: var(--success);
+        }
+
+        .timer-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 2px;
+        }
+
+        .timer-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .timer-unit {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+        }
+
+        .note-display.in-tune {
+            color: var(--success);
+        }
+
+        .note-display.flat {
+            color: var(--warning);
+        }
+
+        .note-display.sharp {
+            color: var(--accent-light);
+        }
+
+        .jianpu-name {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .frequency {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .cents-display {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .cents-bar {
+            width: 100%;
+            height: 30px;
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .cents-indicator {
+            position: absolute;
+            width: 4px;
+            height: 100%;
+            background: var(--text-primary);
+            left: 50%;
+            transform: translateX(-50%);
+            transition: left 0.1s;
+        }
+
+        .cents-center {
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: var(--success);
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .cents-zone {
+            position: absolute;
+            height: 100%;
+            background: rgba(78, 204, 163, 0.2);
+        }
+
+        .cents-zone-left {
+            left: 40%;
+            width: 10%;
+        }
+
+        .cents-zone-right {
+            left: 50%;
+            width: 10%;
+        }
+
+        .cents-label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+        }
+
+        .cents-label-flat {
+            left: 8%;
+        }
+
+        .cents-label-sharp {
+            right: 8%;
+        }
+
+        .tuner-btn {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border: none;
+            color: white;
+            padding: 14px 40px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+
+        .tuner-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+        }
+
+        .tuner-btn.active {
+            background: var(--success);
+        }
+
+        .note-reference {
+            margin-top: 20px;
+        }
+
+        .note-reference-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .note-reference-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+
+        .note-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 8px 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .note-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .note-btn .jianpu {
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .jianpu-high, .jianpu-low {
+            position: relative;
+            display: inline-block;
+        }
+
+        .jianpu-high::after {
+            content: '·';
+            position: absolute;
+            top: -0.3em;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6em;
+            line-height: 1;
+        }
+
+        .jianpu-low::after {
+            content: '·';
+            position: absolute;
+            bottom: -0.4em;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6em;
+            line-height: 1;
+        }
+
+        .note-btn .pitch {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        /* 频率阈值控制 */
+        .freq-threshold-control {
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .threshold-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .threshold-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .threshold-btn {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .threshold-btn:hover {
+            border-color: var(--accent-light);
+            color: var(--text-primary);
+        }
+
+        .threshold-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .threshold-current {
+            font-size: 0.8rem;
+            color: var(--accent-light);
+        }
+
+        /* 节拍器样式 */
+        .metronome-display {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .bpm-display {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .bpm-label {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .beat-visual {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .beat-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            transition: all 0.1s;
+        }
+
+        .beat-dot.active {
+            background: var(--accent);
+            border-color: var(--accent-light);
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        .beat-dot.first {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .slider-container input[type="range"] {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(233, 69, 96, 0.5);
+        }
+
+        .bpm-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .bpm-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .bpm-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .time-signature {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .time-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .time-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .metro-btn {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border: none;
+            color: white;
+            padding: 14px 40px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+
+        .metro-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+        }
+
+        .metro-btn.active {
+            background: var(--success);
+        }
+
+        /* 版本信息 */
+        .version-info {
+            font-size: 0.75rem;
+            color: var(--accent-light);
+            margin-left: 10px;
+            padding: 2px 8px;
+            background: rgba(255, 107, 107, 0.15);
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        /* 呼吸计时器样式 */
+        .breath-display {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .breath-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 4px solid var(--border);
+            margin: 0 auto 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .breath-circle.inhale {
+            border-color: var(--accent-light);
+            background: rgba(255, 107, 107, 0.2);
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.3);
+        }
+
+        .breath-circle.hold {
+            border-color: var(--warning);
+            background: rgba(255, 201, 60, 0.2);
+            box-shadow: 0 0 30px rgba(255, 201, 60, 0.3);
+        }
+
+        .breath-circle.exhale {
+            border-color: var(--success);
+            background: rgba(78, 204, 163, 0.2);
+            box-shadow: 0 0 30px rgba(78, 204, 163, 0.3);
+        }
+
+        .breath-time {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        .breath-phase {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .breath-settings {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .setting-group {
+            text-align: center;
+            padding: 0 2px;
+        }
+
+        .setting-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            white-space: nowrap;
+        }
+
+        .setting-value {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .setting-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            padding: 0;
+        }
+
+        .setting-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .setting-number {
+            font-size: 1.2rem;
+            font-weight: 600;
+            min-width: 24px;
+        }
+
+        .breath-btn {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border: none;
+            color: white;
+            padding: 14px 40px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+
+        .breath-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+        }
+
+        .breath-btn.active {
+            background: var(--success);
+        }
+
+        .breath-presets {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .preset-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .preset-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* 页脚 */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* 响应式 - 中等屏幕 */
+        @media (max-width: 900px) {
+            .breath-settings {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .setting-group {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0;
+            }
+            
+            .setting-label {
+                margin-bottom: 0;
+                font-size: 0.9rem;
+            }
+            
+            .setting-value {
+                gap: 12px;
+            }
+            
+            .setting-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
+            }
+            
+            .setting-number {
+                font-size: 1.3rem;
+                min-width: 30px;
+            }
+        }
+        
+        /* 响应式 - 小屏幕 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .note-display {
+                font-size: 4rem;
+            }
+            
+            .breath-circle {
+                width: 160px;
+                height: 160px;
+            }
+            
+            .breath-time {
+                font-size: 2.5rem;
+            }
+            
+            .note-reference-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .stability-timer {
+                padding: 6px 8px;
+                min-width: 50px;
+                right: 5%;
+            }
+            
+            .timer-value {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎋 G调洞箫练习助手</h1>
+            <p class="subtitle">调音器 · 节拍器 · 呼吸训练</p>
+            <span class="tune-key">当前调性：G调（简谱）</span>
+        </header>
+
+        <div class="tools-grid">
+            <!-- 调音器 -->
+            <div class="card" role="region" aria-label="调音器">
+                <div class="card-header">
+                    <div class="card-header-top">
+                        <span class="card-icon" aria-hidden="true">🎵</span>
+                        <h2 class="card-title">调音器</h2>
+                    </div>
+                    <div class="key-selector" role="group" aria-label="调性选择">
+                        <button class="key-btn active" id="keyG" onclick="setKey('G')" aria-pressed="true">G调</button>
+                        <button class="key-btn" id="keyF" onclick="setKey('F')" aria-pressed="false">F调</button>
+                        <button class="key-btn" id="keyD" onclick="setKey('D')" aria-pressed="false">D调</button>
+                    </div>
+                </div>
+                
+                <div class="tuner-display">
+                    <div class="note-display-wrapper">
+                        <div class="note-display-center">
+                            <div class="note-display" id="noteDisplay" aria-live="polite" aria-label="检测到的音符">--</div>
+                        </div>
+                        <div class="stability-timer" id="stabilityTimer">
+                            <span class="timer-label">稳定</span>
+                            <span class="timer-value" id="timerValue">0.0</span>
+                            <span class="timer-unit">秒</span>
+                        </div>
+                    </div>
+                    <div class="jianpu-name" id="jianpuName" aria-live="polite">等待检测...</div>
+                    <div class="frequency" id="frequency" aria-live="polite">-- Hz</div>
+                    <div class="cents-display">
+                        <div class="cents-bar" role="meter" aria-label="音准偏差">
+                            <div class="cents-zone cents-zone-left"></div>
+                            <div class="cents-zone cents-zone-right"></div>
+                            <div class="cents-center"></div>
+                            <div class="cents-indicator" id="centsIndicator"></div>
+                            <span class="cents-label cents-label-flat" aria-hidden="true">♭</span>
+                            <span class="cents-label cents-label-sharp" aria-hidden="true">♯</span>
+                        </div>
+                        <span id="centsValue" aria-live="polite">0 音分</span>
+                    </div>
+                    <button class="tuner-btn" id="tunerBtn" onclick="toggleTuner()" aria-pressed="false">开始调音</button>
+                    <div class="freq-threshold-control">
+                        <span class="threshold-label">频率波动阈值</span>
+                        <div class="threshold-buttons">
+                            <button class="threshold-btn" onclick="setFreqThreshold(0.20)">20%</button>
+                            <button class="threshold-btn active" onclick="setFreqThreshold(0.30)">30%</button>
+                            <button class="threshold-btn" onclick="setFreqThreshold(0.40)">40%</button>
+                            <button class="threshold-btn" onclick="setFreqThreshold(0.50)">50%</button>
+                        </div>
+                        <span class="threshold-current" id="thresholdValue">当前: 30%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 节拍器 -->
+            <div class="card" role="region" aria-label="节拍器">
+                <div class="card-header">
+                    <div class="card-header-top">
+                        <span class="card-icon" aria-hidden="true">⏱️</span>
+                        <h2 class="card-title">节拍器</h2>
+                    </div>
+                </div>
+                <div class="metronome-display">
+                    <div class="bpm-display" id="bpmDisplay" aria-live="polite" aria-label="当前速度">80</div>
+                    <div class="bpm-label">BPM</div>
+                    <div class="beat-visual" id="beatVisual" role="group" aria-label="节拍显示">
+                        <div class="beat-dot first"></div>
+                        <div class="beat-dot"></div>
+                        <div class="beat-dot"></div>
+                        <div class="beat-dot"></div>
+                    </div>
+                    <div class="slider-container">
+                        <span aria-hidden="true">40</span>
+                        <input type="range" id="tempoSlider" min="40" max="208" value="80" oninput="updateTempo(this.value)" aria-label="速度调节滑块">
+                        <span aria-hidden="true">208</span>
+                    </div>
+                    <div class="bpm-btns" role="group" aria-label="速度微调">
+                        <button class="bpm-btn" onclick="adjustTempo(-5)" aria-label="减少5 BPM">-5</button>
+                        <button class="bpm-btn" onclick="adjustTempo(-1)" aria-label="减少1 BPM">-1</button>
+                        <button class="bpm-btn" onclick="adjustTempo(1)" aria-label="增加1 BPM">+1</button>
+                        <button class="bpm-btn" onclick="adjustTempo(5)" aria-label="增加5 BPM">+5</button>
+                    </div>
+                    <div class="time-signature" role="group" aria-label="拍号选择">
+                        <button class="time-btn" onclick="setTimeSignature(2, this)" aria-pressed="false">2/4</button>
+                        <button class="time-btn" onclick="setTimeSignature(3, this)" aria-pressed="false">3/4</button>
+                        <button class="time-btn active" onclick="setTimeSignature(4, this)" aria-pressed="true">4/4</button>
+                        <button class="time-btn" onclick="setTimeSignature(6, this)" aria-pressed="false">6/8</button>
+                    </div>
+                    <button class="metro-btn" id="metroBtn" onclick="toggleMetronome()" aria-pressed="false">开始</button>
+                </div>
+            </div>
+
+            <!-- 呼吸计时器 -->
+            <div class="card" role="region" aria-label="呼吸训练">
+                <div class="card-header">
+                    <div class="card-header-top">
+                        <span class="card-icon" aria-hidden="true">🌬️</span>
+                        <h2 class="card-title">呼吸训练</h2>
+                    </div>
+                </div>
+                <div class="breath-display">
+                    <div class="breath-circle" id="breathCircle" role="timer" aria-label="呼吸计时器">
+                        <div class="breath-time" id="breathTime" aria-live="polite">0:00</div>
+                        <div class="breath-phase" id="breathPhase" aria-live="polite">准备</div>
+                    </div>
+                    <div class="breath-settings" role="group" aria-label="呼吸时间设置">
+                        <div class="setting-group">
+                            <div class="setting-label" id="inhaleLabel">吸气 (秒)</div>
+                            <div class="setting-value">
+                                <button class="setting-btn" onclick="adjustBreath('inhale', -1)" aria-label="减少吸气时间">-</button>
+                                <span class="setting-number" id="inhaleTime" aria-labelledby="inhaleLabel">4</span>
+                                <button class="setting-btn" onclick="adjustBreath('inhale', 1)" aria-label="增加吸气时间">+</button>
+                            </div>
+                        </div>
+                        <div class="setting-group">
+                            <div class="setting-label" id="holdLabel">屏气 (秒)</div>
+                            <div class="setting-value">
+                                <button class="setting-btn" onclick="adjustBreath('hold', -1)" aria-label="减少屏气时间">-</button>
+                                <span class="setting-number" id="holdTime" aria-labelledby="holdLabel">4</span>
+                                <button class="setting-btn" onclick="adjustBreath('hold', 1)" aria-label="增加屏气时间">+</button>
+                            </div>
+                        </div>
+                        <div class="setting-group">
+                            <div class="setting-label" id="exhaleLabel">呼气 (秒)</div>
+                            <div class="setting-value">
+                                <button class="setting-btn" onclick="adjustBreath('exhale', -1)" aria-label="减少呼气时间">-</button>
+                                <span class="setting-number" id="exhaleTime" aria-labelledby="exhaleLabel">6</span>
+                                <button class="setting-btn" onclick="adjustBreath('exhale', 1)" aria-label="增加呼气时间">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="breath-btn" id="breathBtn" onclick="toggleBreath()" aria-pressed="false">开始训练</button>
+                    <div class="breath-presets" role="group" aria-label="呼吸预设">
+                        <button class="preset-btn" onclick="setBreathPreset(4, 0, 4)">基础 4-0-4</button>
+                        <button class="preset-btn" onclick="setBreathPreset(4, 4, 4)">方形呼吸 4-4-4</button>
+                        <button class="preset-btn" onclick="setBreathPreset(4, 7, 8)">放松 4-7-8</button>
+                        <button class="preset-btn" onclick="setBreathPreset(5, 5, 10)">长气息 5-5-10</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>🎋 G调洞箫练习助手 V1.0 | 简谱显示 · 音准检测 · 气息训练 <span class="version-info">by Dreamke</span></p>
+            <p style="margin-top: 8px; font-size: 0.85rem;">筒音作5 · 建议使用耳机 · 长气息练习有助于箫声稳定</p>
+        </footer>
+    </div>
+
+    <script>
+        // ==================== 调性配置 ====================
+        const keyConfigs = {
+            'G': {
+                name: 'G调',
+                scale: [
+                    { jianpu: '5', name: '低音5', freq: 293.66, pitch: 'D4', isLow: true },
+                    { jianpu: '6', name: '低音6', freq: 329.63, pitch: 'E4', isLow: true },
+                    { jianpu: '7', name: '低音7', freq: 369.99, pitch: 'F#4', isLow: true },
+                    { jianpu: '1', name: '中音1', freq: 392.00, pitch: 'G4' },
+                    { jianpu: '2', name: '中音2', freq: 440.00, pitch: 'A4' },
+                    { jianpu: '3', name: '中音3', freq: 493.88, pitch: 'B4' },
+                    { jianpu: '4', name: '中音4', freq: 523.25, pitch: 'C5' },
+                    { jianpu: '5', name: '中音5', freq: 587.33, pitch: 'D5' },
+                    { jianpu: '6', name: '中音6', freq: 659.25, pitch: 'E5' },
+                    { jianpu: '7', name: '中音7', freq: 739.99, pitch: 'F#5' },
+                    { jianpu: '1', name: '高音1', freq: 783.99, pitch: 'G5', isHigh: true },
+                    { jianpu: '2', name: '高音2', freq: 880.00, pitch: 'A5', isHigh: true },
+                ]
+            },
+            'F': {
+                name: 'F调',
+                scale: [
+                    { jianpu: '6', name: '低音6', freq: 293.66, pitch: 'D4', isLow: true },
+                    { jianpu: '7', name: '低音7', freq: 311.13, pitch: 'Eb4', isLow: true },
+                    { jianpu: '1', name: '中音1', freq: 349.23, pitch: 'F4' },
+                    { jianpu: '2', name: '中音2', freq: 392.00, pitch: 'G4' },
+                    { jianpu: '3', name: '中音3', freq: 440.00, pitch: 'A4' },
+                    { jianpu: '4', name: '中音4', freq: 466.16, pitch: 'Bb4' },
+                    { jianpu: '5', name: '中音5', freq: 523.25, pitch: 'C5' },
+                    { jianpu: '6', name: '中音6', freq: 587.33, pitch: 'D5' },
+                    { jianpu: '7', name: '中音7', freq: 622.25, pitch: 'Eb5' },
+                    { jianpu: '1', name: '高音1', freq: 698.46, pitch: 'F5', isHigh: true },
+                ]
+            },
+            'D': {
+                name: 'D调',
+                scale: [
+                    { jianpu: '1', name: '中音1', freq: 293.66, pitch: 'D4' },
+                    { jianpu: '2', name: '中音2', freq: 329.63, pitch: 'E4' },
+                    { jianpu: '3', name: '中音3', freq: 369.99, pitch: 'F#4' },
+                    { jianpu: '4', name: '中音4', freq: 392.00, pitch: 'G4' },
+                    { jianpu: '5', name: '中音5', freq: 440.00, pitch: 'A4' },
+                    { jianpu: '6', name: '中音6', freq: 493.88, pitch: 'B4' },
+                    { jianpu: '7', name: '中音7', freq: 554.37, pitch: 'C#5' },
+                    { jianpu: '1', name: '高音1', freq: 587.33, pitch: 'D5', isHigh: true },
+                    { jianpu: '2', name: '高音2', freq: 659.25, pitch: 'E5', isHigh: true },
+                    { jianpu: '3', name: '高音3', freq: 739.99, pitch: 'F#5', isHigh: true },
+                ]
+            }
+        };
+
+        let currentKey = 'G';
+
+        function setKey(key, shouldSave = true) {
+            currentKey = key;
+            document.querySelectorAll('.key-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-pressed', 'false');
+            });
+            const activeBtn = document.getElementById('key' + key);
+            activeBtn.classList.add('active');
+            activeBtn.setAttribute('aria-pressed', 'true');
+            
+            document.querySelector('.tune-key').textContent = '当前调性：' + keyConfigs[key].name + '（简谱）';
+            
+            if (shouldSave) saveSettings();
+        }
+
+
+
+        // ==================== 音频上下文管理 ====================
+        let sharedAudioContext = null;
+
+        function getAudioContext() {
+            if (!sharedAudioContext || sharedAudioContext.state === 'closed') {
+                sharedAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (sharedAudioContext.state === 'suspended') {
+                sharedAudioContext.resume();
+            }
+            return sharedAudioContext;
+        }
+
+        // ==================== 调音器 ====================
+        let analyser = null;
+        let microphone = null;
+        let mediaStream = null;
+        let isTunerOn = false;
+        let animationId = null;
+        let stabilityStartTime = null;
+        let lastNoteName = null;
+        let stabilityTimerInterval = null;
+        let lastSignalTime = Date.now();
+        const NO_SIGNAL_DURATION = 100; // 连续0.1秒(100ms)检测不到音才重置
+        let freqThreshold = 0.30; // 频率波动阈值，默认30%
+
+        function toggleTuner() {
+            if (isTunerOn) {
+                stopTuner();
+            } else {
+                startTuner();
+            }
+        }
+
+        function setFreqThreshold(threshold) {
+            freqThreshold = threshold;
+            
+            // 更新按钮状态
+            document.querySelectorAll('.threshold-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 更新显示文本
+            document.getElementById('thresholdValue').textContent = '当前: ' + Math.round(threshold * 100) + '%';
+        }
+
+        async function startTuner() {
+            try {
+                console.log('开始调音...');
+                const ctx = getAudioContext();
+                console.log('音频上下文已获取');
+                
+                mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: false,
+                        noiseSuppression: false,
+                        autoGainControl: false
+                    }
+                });
+                console.log('麦克风流已获取');
+                
+                microphone = ctx.createMediaStreamSource(mediaStream);
+                analyser = ctx.createAnalyser();
+                analyser.fftSize = 8192;
+                microphone.connect(analyser);
+                console.log('音频分析器已连接');
+                
+                isTunerOn = true;
+                document.getElementById('tunerBtn').textContent = '停止调音';
+                document.getElementById('tunerBtn').classList.add('active');
+                document.getElementById('tunerBtn').setAttribute('aria-pressed', 'true');
+                
+                console.log('开始更新音高...');
+                updatePitch();
+            } catch (err) {
+                alert('无法访问麦克风，请确保已授权麦克风权限。\n错误: ' + err.message);
+                console.error('调音器启动错误:', err);
+            }
+        }
+
+        function stopTuner() {
+            isTunerOn = false;
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            if (stabilityTimerInterval) {
+                clearInterval(stabilityTimerInterval);
+                stabilityTimerInterval = null;
+            }
+            if (microphone) {
+                microphone.disconnect();
+                microphone = null;
+            }
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+            document.getElementById('tunerBtn').textContent = '开始调音';
+            document.getElementById('tunerBtn').classList.remove('active');
+            document.getElementById('tunerBtn').setAttribute('aria-pressed', 'false');
+            document.getElementById('noteDisplay').textContent = '--';
+            document.getElementById('jianpuName').textContent = '等待检测...';
+            document.getElementById('frequency').textContent = '-- Hz';
+            document.getElementById('centsIndicator').style.left = '50%';
+            document.getElementById('centsValue').textContent = '0 音分';
+            document.getElementById('noteDisplay').className = 'note-display';
+            document.getElementById('stabilityTimer').classList.remove('active', 'stable');
+            document.getElementById('timerValue').textContent = '0.0';
+            stabilityStartTime = null;
+            lastNoteName = null;
+            lastSignalTime = Date.now();
+        }
+
+        function updatePitch() {
+            if (!isTunerOn) return;
+            
+            const ctx = getAudioContext();
+            const bufferLength = analyser.fftSize;
+            const buffer = new Float32Array(bufferLength);
+            analyser.getFloatTimeDomainData(buffer);
+            
+            const frequency = autoCorrelate(buffer, ctx.sampleRate);
+            
+            if (frequency > 0) {
+                // 更新最后信号时间
+                lastSignalTime = Date.now();
+                
+                const noteInfo = frequencyToJianpu(frequency);
+                
+                document.getElementById('noteDisplay').innerHTML = noteInfo.jianpu;
+                document.getElementById('jianpuName').textContent = noteInfo.name + ' · ' + noteInfo.pitch;
+                document.getElementById('frequency').textContent = frequency.toFixed(1) + ' Hz';
+                
+                const indicatorPosition = 50 + (noteInfo.cents / 50) * 45;
+                document.getElementById('centsIndicator').style.left = Math.max(5, Math.min(95, indicatorPosition)) + '%';
+                document.getElementById('centsValue').textContent = (noteInfo.cents > 0 ? '+' : '') + noteInfo.cents + ' 音分';
+                
+                const noteDisplay = document.getElementById('noteDisplay');
+                const stabilityTimer = document.getElementById('stabilityTimer');
+                noteDisplay.className = 'note-display';
+                
+                const currentNoteName = noteInfo.name;
+                const isInTune = Math.abs(noteInfo.cents) < 10;
+                
+                // 音准颜色提示
+                if (isInTune) {
+                    noteDisplay.classList.add('in-tune');
+                } else if (noteInfo.cents < 0) {
+                    noteDisplay.classList.add('flat');
+                } else {
+                    noteDisplay.classList.add('sharp');
+                }
+                
+                // 计时逻辑：使用频率差值判断是否为同一音，而不是音符名称
+                // 只有当频率变化超过10%时才认为是新音符
+                const currentFreq = frequency;
+                let isNewNote = false;
+                
+                if (lastNoteName === null) {
+                    isNewNote = true;
+                } else {
+                    // 找到上次音符的频率
+                    const lastNote = keyConfigs[currentKey].scale.find(n => n.name === lastNoteName);
+                    if (lastNote) {
+                        const freqDiff = Math.abs(currentFreq - lastNote.freq) / lastNote.freq;
+                        // 频率变化超过阈值或音符名称完全不同才认为是新音符
+                        isNewNote = freqDiff > freqThreshold || lastNoteName !== currentNoteName;
+                    } else {
+                        isNewNote = lastNoteName !== currentNoteName;
+                    }
+                }
+                
+                if (isNewNote) {
+                    // 新音符，重置计时
+                    stabilityStartTime = Date.now();
+                    lastNoteName = currentNoteName;
+                    
+                    // 清除旧的计时器
+                    if (stabilityTimerInterval) {
+                        clearInterval(stabilityTimerInterval);
+                    }
+                    
+                    // 显示计时器
+                    stabilityTimer.classList.add('active');
+                    stabilityTimer.classList.remove('stable');
+                    
+                    // 启动新的计时器
+                    stabilityTimerInterval = setInterval(() => {
+                        if (stabilityStartTime) {
+                            const elapsed = (Date.now() - stabilityStartTime) / 1000;
+                            document.getElementById('timerValue').textContent = elapsed.toFixed(1);
+                            
+                            // 如果超过3秒，显示为稳定状态
+                            if (elapsed >= 3) {
+                                stabilityTimer.classList.add('stable');
+                            }
+                        }
+                    }, 100);
+                }
+            } else {
+                // 没有检测到音，检查是否超过0.5秒
+                const timeSinceLastSignal = Date.now() - lastSignalTime;
+                
+                if (timeSinceLastSignal >= NO_SIGNAL_DURATION) {
+                    if (stabilityTimerInterval) {
+                        clearInterval(stabilityTimerInterval);
+                        stabilityTimerInterval = null;
+                    }
+                    stabilityStartTime = null;
+                    lastNoteName = null;
+                    document.getElementById('timerValue').textContent = '0.0';
+                    document.getElementById('stabilityTimer').classList.remove('active', 'stable');
+                    lastSignalTime = Date.now();
+                }
+            }
+            
+            animationId = requestAnimationFrame(updatePitch);
+        }
+
+        function autoCorrelate(buffer, sampleRate) {
+            const SIZE = buffer.length;
+            let rms = 0;
+            
+            for (let i = 0; i < SIZE; i++) {
+                rms += buffer[i] * buffer[i];
+            }
+            rms = Math.sqrt(rms / SIZE);
+            
+            if (rms < 0.01) return -1;
+            
+            let r1 = 0, r2 = SIZE - 1;
+            const threshold = 0.2;
+            
+            for (let i = 0; i < SIZE / 2; i++) {
+                if (Math.abs(buffer[i]) < threshold) { r1 = i; break; }
+            }
+            for (let i = 1; i < SIZE / 2; i++) {
+                if (Math.abs(buffer[SIZE - i]) < threshold) { r2 = SIZE - i; break; }
+            }
+            
+            const trimmedBuffer = buffer.slice(r1, r2);
+            const trimmedSize = trimmedBuffer.length;
+            
+            const c = new Float32Array(trimmedSize);
+            for (let i = 0; i < trimmedSize; i++) {
+                for (let j = 0; j < trimmedSize - i; j++) {
+                    c[i] += trimmedBuffer[j] * trimmedBuffer[j + i];
+                }
+            }
+            
+            let d = 0;
+            while (c[d] > c[d + 1]) d++;
+            
+            let maxVal = -1, maxPos = -1;
+            for (let i = d; i < Math.min(trimmedSize, d + trimmedSize / 2); i++) {
+                if (c[i] > maxVal) {
+                    maxVal = c[i];
+                    maxPos = i;
+                }
+            }
+            
+            let T0 = maxPos;
+            if (T0 > 0 && T0 < trimmedSize - 1) {
+                const x1 = c[T0 - 1], x2 = c[T0], x3 = c[T0 + 1];
+                const a = (x1 + x3 - 2 * x2) / 2;
+                const b = (x3 - x1) / 2;
+                if (a) T0 = T0 - b / (2 * a);
+            }
+            
+            return sampleRate / T0;
+        }
+
+        function frequencyToJianpu(frequency) {
+            const scale = keyConfigs[currentKey].scale;
+            
+            let closest = scale[0];
+            let minDiff = Math.abs(frequency - scale[0].freq);
+            
+            for (const note of scale) {
+                const diff = Math.abs(frequency - note.freq);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closest = note;
+                }
+            }
+            
+            const cents = Math.round(1200 * Math.log2(frequency / closest.freq));
+            
+            let jianpuHtml = closest.jianpu;
+            if (closest.isHigh) {
+                jianpuHtml = `<span class="jianpu-high">${closest.jianpu}</span>`;
+            } else if (closest.isLow) {
+                jianpuHtml = `<span class="jianpu-low">${closest.jianpu}</span>`;
+            }
+            
+            return {
+                jianpu: jianpuHtml,
+                name: closest.name,
+                pitch: closest.pitch,
+                cents: cents
+            };
+        }
+
+        function playNote(freq, noteName) {
+            const ctx = getAudioContext();
+            
+            // 创建多个振荡器模拟洞箫音色
+            const fundamental = ctx.createOscillator();
+            const harmonic2 = ctx.createOscillator();
+            const harmonic3 = ctx.createOscillator();
+            
+            const gainNode = ctx.createGain();
+            const filter = ctx.createBiquadFilter();
+            
+            // 设置基础音
+            fundamental.frequency.value = freq;
+            fundamental.type = 'sine';
+            
+            // 设置二次谐波（八度）
+            harmonic2.frequency.value = freq * 2;
+            harmonic2.type = 'sine';
+            
+            // 设置三次谐波
+            harmonic3.frequency.value = freq * 3;
+            harmonic3.type = 'sine';
+            
+            // 创建增益节点控制各谐波音量
+            const fundamentalGain = ctx.createGain();
+            const harmonic2Gain = ctx.createGain();
+            const harmonic3Gain = ctx.createGain();
+            
+            // 设置谐波比例（洞箫音色特点：基音强，谐波较弱）
+            fundamentalGain.gain.value = 0.5;
+            harmonic2Gain.gain.value = 0.15;
+            harmonic3Gain.gain.value = 0.05;
+            
+            // 连接音频图
+            fundamental.connect(fundamentalGain);
+            harmonic2.connect(harmonic2Gain);
+            harmonic3.connect(harmonic3Gain);
+            
+            fundamentalGain.connect(filter);
+            harmonic2Gain.connect(filter);
+            harmonic3Gain.connect(filter);
+            
+            filter.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            
+            // 设置低通滤波器模拟洞箫的柔和音色
+            filter.type = 'lowpass';
+            filter.frequency.value = freq * 4;
+            filter.Q.value = 1;
+            
+            // 设置包络（ADSR）
+            const now = ctx.currentTime;
+            const attack = 0.05;
+            const decay = 0.1;
+            const sustain = 0.6;
+            const release = 0.3;
+            const duration = 1.5;
+            
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(0.4, now + attack);
+            gainNode.gain.exponentialRampToValueAtTime(0.4 * sustain, now + attack + decay);
+            gainNode.gain.setValueAtTime(0.4 * sustain, now + duration - release);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            
+            // 播放
+            fundamental.start(now);
+            harmonic2.start(now);
+            harmonic3.start(now);
+            
+            fundamental.stop(now + duration);
+            harmonic2.stop(now + duration);
+            harmonic3.stop(now + duration);
+        }
+
+        // ==================== 节拍器 ====================
+        let metronomeInterval = null;
+        let isMetronomeOn = false;
+        let currentBeat = 0;
+        let beatsPerMeasure = 4;
+        let tempo = 80;
+
+        function updateTempo(value) {
+            tempo = parseInt(value);
+            document.getElementById('bpmDisplay').textContent = tempo;
+            document.getElementById('tempoSlider').value = tempo;
+            
+            if (isMetronomeOn) {
+                clearInterval(metronomeInterval);
+                startMetronomeTick();
+            }
+            
+            saveSettings();
+        }
+
+        function adjustTempo(delta) {
+            const newTempo = Math.max(40, Math.min(208, tempo + delta));
+            updateTempo(newTempo);
+        }
+
+        function setTimeSignature(beats, btn) {
+            beatsPerMeasure = beats;
+            currentBeat = 0;
+            
+            document.querySelectorAll('.time-btn').forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-pressed', 'false');
+            });
+            if (btn) {
+                btn.classList.add('active');
+                btn.setAttribute('aria-pressed', 'true');
+            }
+            
+            const beatVisual = document.getElementById('beatVisual');
+            beatVisual.innerHTML = '';
+            for (let i = 0; i < beats; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'beat-dot' + (i === 0 ? ' first' : '');
+                beatVisual.appendChild(dot);
+            }
+            saveSettings();
+        }
+
+        function toggleMetronome() {
+            if (isMetronomeOn) {
+                stopMetronome();
+            } else {
+                startMetronome();
+            }
+        }
+
+        function startMetronome() {
+            getAudioContext();
+            
+            isMetronomeOn = true;
+            currentBeat = 0;
+            document.getElementById('metroBtn').textContent = '停止';
+            document.getElementById('metroBtn').classList.add('active');
+            document.getElementById('metroBtn').setAttribute('aria-pressed', 'true');
+            
+            startMetronomeTick();
+        }
+
+        function startMetronomeTick() {
+            const interval = 60000 / tempo;
+            
+            metronomeInterval = setInterval(() => {
+                playTick(currentBeat === 0);
+                updateBeatVisual();
+                currentBeat = (currentBeat + 1) % beatsPerMeasure;
+            }, interval);
+            
+            playTick(true);
+            updateBeatVisual();
+            currentBeat = 1;
+        }
+
+        function stopMetronome() {
+            isMetronomeOn = false;
+            clearInterval(metronomeInterval);
+            document.getElementById('metroBtn').textContent = '开始';
+            document.getElementById('metroBtn').classList.remove('active');
+            document.getElementById('metroBtn').setAttribute('aria-pressed', 'false');
+            
+            document.querySelectorAll('.beat-dot').forEach(dot => {
+                dot.classList.remove('active');
+            });
+        }
+
+        function playTick(isAccent) {
+            const ctx = getAudioContext();
+            
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            
+            oscillator.frequency.value = isAccent ? 1000 : 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(isAccent ? 0.5 : 0.3, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+            
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + 0.1);
+        }
+
+        function updateBeatVisual() {
+            const dots = document.querySelectorAll('.beat-dot');
+            dots.forEach((dot, i) => {
+                dot.classList.remove('active');
+                if (i === currentBeat) {
+                    dot.classList.add('active');
+                }
+            });
+        }
+
+        // ==================== 呼吸计时器 ====================
+        let breathInterval = null;
+        let isBreathOn = false;
+        let breathPhase = 'ready';
+        let breathTime = 0;
+        let breathSettings = {
+            inhale: 4,
+            hold: 4,
+            exhale: 6
+        };
+
+        function playBreathSound(phase) {
+            const ctx = getAudioContext();
+            
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            
+            const frequencies = {
+                'inhale': 440,
+                'hold': 523.25,
+                'exhale': 392
+            };
+            
+            oscillator.frequency.value = frequencies[phase] || 440;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+            
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + 0.3);
+        }
+
+        function adjustBreath(phase, delta) {
+            breathSettings[phase] = Math.max(1, Math.min(30, breathSettings[phase] + delta));
+            document.getElementById(phase + 'Time').textContent = breathSettings[phase];
+            saveSettings();
+        }
+
+        function setBreathPreset(inhale, hold, exhale) {
+            breathSettings.inhale = inhale;
+            breathSettings.hold = hold;
+            breathSettings.exhale = exhale;
+            
+            document.getElementById('inhaleTime').textContent = inhale;
+            document.getElementById('holdTime').textContent = hold;
+            document.getElementById('exhaleTime').textContent = exhale;
+            saveSettings();
+        }
+
+        function toggleBreath() {
+            if (isBreathOn) {
+                stopBreath();
+            } else {
+                startBreath();
+            }
+        }
+
+        function startBreath() {
+            isBreathOn = true;
+            breathPhase = 'inhale';
+            breathTime = breathSettings.inhale;
+            
+            document.getElementById('breathBtn').textContent = '停止';
+            document.getElementById('breathBtn').classList.add('active');
+            document.getElementById('breathBtn').setAttribute('aria-pressed', 'true');
+            
+            playBreathSound('inhale');
+            updateBreathDisplay();
+            
+            breathInterval = setInterval(() => {
+                breathTime--;
+                updateBreathDisplay();
+                
+                if (breathTime <= 0) {
+                    nextBreathPhase();
+                }
+            }, 1000);
+        }
+
+        function stopBreath() {
+            isBreathOn = false;
+            clearInterval(breathInterval);
+            
+            document.getElementById('breathBtn').textContent = '开始训练';
+            document.getElementById('breathBtn').classList.remove('active');
+            document.getElementById('breathBtn').setAttribute('aria-pressed', 'false');
+            document.getElementById('breathCircle').className = 'breath-circle';
+            document.getElementById('breathPhase').textContent = '准备';
+            document.getElementById('breathTime').textContent = '0:00';
+        }
+
+        function nextBreathPhase() {
+            const circle = document.getElementById('breathCircle');
+            circle.className = 'breath-circle';
+            
+            if (breathPhase === 'inhale') {
+                if (breathSettings.hold > 0) {
+                    breathPhase = 'hold';
+                    breathTime = breathSettings.hold;
+                } else {
+                    breathPhase = 'exhale';
+                    breathTime = breathSettings.exhale;
+                }
+            } else if (breathPhase === 'hold') {
+                breathPhase = 'exhale';
+                breathTime = breathSettings.exhale;
+            } else {
+                breathPhase = 'inhale';
+                breathTime = breathSettings.inhale;
+            }
+            
+            playBreathSound(breathPhase);
+            updateBreathDisplay();
+        }
+
+        function updateBreathDisplay() {
+            const circle = document.getElementById('breathCircle');
+            circle.className = 'breath-circle ' + breathPhase;
+            
+            const minutes = Math.floor(breathTime / 60);
+            const seconds = breathTime % 60;
+            document.getElementById('breathTime').textContent = 
+                minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+            
+            const phaseNames = {
+                'inhale': '吸气',
+                'hold': '屏气',
+                'exhale': '呼气',
+                'ready': '准备'
+            };
+            document.getElementById('breathPhase').textContent = phaseNames[breathPhase];
+        }
+
+        // ==================== 设置持久化 ====================
+        function saveSettings() {
+            const settings = {
+                currentKey: currentKey,
+                tempo: tempo,
+                beatsPerMeasure: beatsPerMeasure,
+                breathSettings: breathSettings
+            };
+            localStorage.setItem('dongxiaoSettings', JSON.stringify(settings));
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('dongxiaoSettings');
+            if (saved) {
+                try {
+                    const settings = JSON.parse(saved);
+                    
+                    if (settings.currentKey) {
+                        setKey(settings.currentKey, false);
+                    }
+                    
+                    if (settings.tempo) {
+                        tempo = settings.tempo;
+                        document.getElementById('bpmDisplay').textContent = tempo;
+                        document.getElementById('tempoSlider').value = tempo;
+                    }
+                    
+                    if (settings.beatsPerMeasure) {
+                        beatsPerMeasure = settings.beatsPerMeasure;
+                        const timeBtns = document.querySelectorAll('.time-btn');
+                        timeBtns.forEach(btn => btn.classList.remove('active'));
+                        const beatsMap = {2: 0, 3: 1, 4: 2, 6: 3};
+                        if (timeBtns[beatsMap[beatsPerMeasure]]) {
+                            timeBtns[beatsMap[beatsPerMeasure]].classList.add('active');
+                        }
+                        const beatVisual = document.getElementById('beatVisual');
+                        beatVisual.innerHTML = '';
+                        for (let i = 0; i < beatsPerMeasure; i++) {
+                            const dot = document.createElement('div');
+                            dot.className = 'beat-dot' + (i === 0 ? ' first' : '');
+                            beatVisual.appendChild(dot);
+                        }
+                    }
+                    
+                    if (settings.breathSettings) {
+                        breathSettings = settings.breathSettings;
+                        document.getElementById('inhaleTime').textContent = breathSettings.inhale;
+                        document.getElementById('holdTime').textContent = breathSettings.hold;
+                        document.getElementById('exhaleTime').textContent = breathSettings.exhale;
+                    }
+                } catch (e) {
+                    console.error('加载设置失败:', e);
+                }
+            }
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+        });
+    </script>
+</body>
+</html>
