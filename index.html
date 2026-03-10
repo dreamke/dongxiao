@@ -850,9 +850,10 @@
                         <h2 class="card-title">调音器</h2>
                     </div>
                     <div class="key-selector" role="group" aria-label="调性选择">
-                        <button class="key-btn active" id="keyG" onclick="setKey('G')" aria-pressed="true">G调</button>
-                        <button class="key-btn" id="keyF" onclick="setKey('F')" aria-pressed="false">F调</button>
-                        <button class="key-btn" id="keyD" onclick="setKey('D')" aria-pressed="false">D调</button>
+                        <button class="key-btn active" id="keyG5" onclick="setKey('G5')" aria-pressed="true">G5</button>
+                        <button class="key-btn" id="keyG2" onclick="setKey('G2')" aria-pressed="false">G2</button>
+                        <button class="key-btn" id="keyF5" onclick="setKey('F5')" aria-pressed="false">F5</button>
+                        <button class="key-btn" id="keyF2" onclick="setKey('F2')" aria-pressed="false">F2</button>
                     </div>
                 </div>
                 
@@ -983,7 +984,7 @@
         </div>
 
         <footer>
-            <p>🎋 G调洞箫练习助手 V1.0 | 简谱显示 · 音准检测 · 气息训练 <span class="version-info">by Dreamke</span></p>
+            <p>🎋 G调洞箫练习助手 V1.1 | 简谱显示 · 音准检测 · 气息训练 <span class="version-info">by Dreamke</span></p>
             <p style="margin-top: 8px; font-size: 0.85rem;">筒音作5 · 建议使用耳机 · 长气息练习有助于箫声稳定</p>
         </footer>
     </div>
@@ -991,8 +992,9 @@
     <script>
         // ==================== 调性配置 ====================
         const keyConfigs = {
-            'G': {
-                name: 'G调',
+            'G5': {
+                name: 'G5',
+                fullName: 'G调（筒音作5）',
                 scale: [
                     { jianpu: '5', name: '低音5', freq: 293.66, pitch: 'D4', isLow: true },
                     { jianpu: '6', name: '低音6', freq: 329.63, pitch: 'E4', isLow: true },
@@ -1006,41 +1008,87 @@
                     { jianpu: '7', name: '中音7', freq: 739.99, pitch: 'F#5' },
                     { jianpu: '1', name: '高音1', freq: 783.99, pitch: 'G5', isHigh: true },
                     { jianpu: '2', name: '高音2', freq: 880.00, pitch: 'A5', isHigh: true },
+                    { jianpu: '3', name: '高音3', freq: 987.77, pitch: 'B5', isHigh: true },
+                    { jianpu: '4', name: '高音4', freq: 1046.50, pitch: 'C6', isHigh: true },
+                    { jianpu: '5', name: '高音5', freq: 1174.66, pitch: 'D6', isHigh: true },
+                    { jianpu: '6', name: '高音6', freq: 1318.51, pitch: 'E6', isHigh: true },
                 ]
             },
-            'F': {
-                name: 'F调',
+            'G2': {
+                name: 'G2',
+                fullName: 'G调（筒音作2）',
                 scale: [
-                    { jianpu: '6', name: '低音6', freq: 293.66, pitch: 'D4', isLow: true },
-                    { jianpu: '7', name: '低音7', freq: 311.13, pitch: 'Eb4', isLow: true },
-                    { jianpu: '1', name: '中音1', freq: 349.23, pitch: 'F4' },
-                    { jianpu: '2', name: '中音2', freq: 392.00, pitch: 'G4' },
-                    { jianpu: '3', name: '中音3', freq: 440.00, pitch: 'A4' },
-                    { jianpu: '4', name: '中音4', freq: 466.16, pitch: 'Bb4' },
-                    { jianpu: '5', name: '中音5', freq: 523.25, pitch: 'C5' },
-                    { jianpu: '6', name: '中音6', freq: 587.33, pitch: 'D5' },
-                    { jianpu: '7', name: '中音7', freq: 622.25, pitch: 'Eb5' },
-                    { jianpu: '1', name: '高音1', freq: 698.46, pitch: 'F5', isHigh: true },
+                    { jianpu: '2', name: '低音2', freq: 220.00, pitch: 'A3', isLow: true },
+                    { jianpu: '3', name: '低音3', freq: 246.94, pitch: 'B3', isLow: true },
+                    { jianpu: '4', name: '低音4', freq: 261.63, pitch: 'C4', isLow: true },
+                    { jianpu: '5', name: '低音5', freq: 293.66, pitch: 'D4', isLow: true },
+                    { jianpu: '6', name: '低音6', freq: 329.63, pitch: 'E4', isLow: true },
+                    { jianpu: '7', name: '低音7', freq: 369.99, pitch: 'F#4', isLow: true },
+                    { jianpu: '1', name: '中音1', freq: 392.00, pitch: 'G4' },
+                    { jianpu: '2', name: '中音2', freq: 440.00, pitch: 'A4' },
+                    { jianpu: '3', name: '中音3', freq: 493.88, pitch: 'B4' },
+                    { jianpu: '4', name: '中音4', freq: 523.25, pitch: 'C5' },
+                    { jianpu: '5', name: '中音5', freq: 587.33, pitch: 'D5' },
+                    { jianpu: '6', name: '中音6', freq: 659.25, pitch: 'E5' },
+                    { jianpu: '7', name: '中音7', freq: 739.99, pitch: 'F#5' },
+                    { jianpu: '1', name: '高音1', freq: 783.99, pitch: 'G5', isHigh: true },
+                    { jianpu: '2', name: '高音2', freq: 880.00, pitch: 'A5', isHigh: true },
+                    { jianpu: '3', name: '高音3', freq: 987.77, pitch: 'B5', isHigh: true },
+                    { jianpu: '4', name: '高音4', freq: 1046.50, pitch: 'C6', isHigh: true },
+                    { jianpu: '5', name: '高音5', freq: 1174.66, pitch: 'D6', isHigh: true },
+                    { jianpu: '6', name: '高音6', freq: 1318.51, pitch: 'E6', isHigh: true },
                 ]
             },
-            'D': {
-                name: 'D调',
+            'F5': {
+                name: 'F5',
+                fullName: 'F调（筒音作5）',
                 scale: [
-                    { jianpu: '1', name: '中音1', freq: 293.66, pitch: 'D4' },
-                    { jianpu: '2', name: '中音2', freq: 329.63, pitch: 'E4' },
-                    { jianpu: '3', name: '中音3', freq: 369.99, pitch: 'F#4' },
-                    { jianpu: '4', name: '中音4', freq: 392.00, pitch: 'G4' },
-                    { jianpu: '5', name: '中音5', freq: 440.00, pitch: 'A4' },
-                    { jianpu: '6', name: '中音6', freq: 493.88, pitch: 'B4' },
-                    { jianpu: '7', name: '中音7', freq: 554.37, pitch: 'C#5' },
-                    { jianpu: '1', name: '高音1', freq: 587.33, pitch: 'D5', isHigh: true },
-                    { jianpu: '2', name: '高音2', freq: 659.25, pitch: 'E5', isHigh: true },
-                    { jianpu: '3', name: '高音3', freq: 739.99, pitch: 'F#5', isHigh: true },
+                    { jianpu: '5', name: '低音5', freq: 349.23, pitch: 'F4', isLow: true },
+                    { jianpu: '6', name: '低音6', freq: 392.00, pitch: 'G4', isLow: true },
+                    { jianpu: '7', name: '低音7', freq: 440.00, pitch: 'A4', isLow: true },
+                    { jianpu: '1', name: '中音1', freq: 466.16, pitch: 'Bb4' },
+                    { jianpu: '2', name: '中音2', freq: 523.25, pitch: 'C5' },
+                    { jianpu: '3', name: '中音3', freq: 587.33, pitch: 'D5' },
+                    { jianpu: '4', name: '中音4', freq: 622.25, pitch: 'Eb5' },
+                    { jianpu: '5', name: '中音5', freq: 698.46, pitch: 'F5' },
+                    { jianpu: '6', name: '中音6', freq: 783.99, pitch: 'G5' },
+                    { jianpu: '7', name: '中音7', freq: 880.00, pitch: 'A5' },
+                    { jianpu: '1', name: '高音1', freq: 932.33, pitch: 'Bb5', isHigh: true },
+                    { jianpu: '2', name: '高音2', freq: 1046.50, pitch: 'C6', isHigh: true },
+                    { jianpu: '3', name: '高音3', freq: 1174.66, pitch: 'D6', isHigh: true },
+                    { jianpu: '4', name: '高音4', freq: 1244.51, pitch: 'Eb6', isHigh: true },
+                    { jianpu: '5', name: '高音5', freq: 1396.91, pitch: 'F6', isHigh: true },
+                    { jianpu: '6', name: '高音6', freq: 1567.98, pitch: 'G6', isHigh: true },
+                ]
+            },
+            'F2': {
+                name: 'F2',
+                fullName: 'F调（筒音作2）',
+                scale: [
+                    { jianpu: '2', name: '低音2', freq: 261.63, pitch: 'C4', isLow: true },
+                    { jianpu: '3', name: '低音3', freq: 293.66, pitch: 'D4', isLow: true },
+                    { jianpu: '4', name: '低音4', freq: 311.13, pitch: 'Eb4', isLow: true },
+                    { jianpu: '5', name: '低音5', freq: 349.23, pitch: 'F4', isLow: true },
+                    { jianpu: '6', name: '低音6', freq: 392.00, pitch: 'G4', isLow: true },
+                    { jianpu: '7', name: '低音7', freq: 440.00, pitch: 'A4', isLow: true },
+                    { jianpu: '1', name: '中音1', freq: 466.16, pitch: 'Bb4' },
+                    { jianpu: '2', name: '中音2', freq: 523.25, pitch: 'C5' },
+                    { jianpu: '3', name: '中音3', freq: 587.33, pitch: 'D5' },
+                    { jianpu: '4', name: '中音4', freq: 622.25, pitch: 'Eb5' },
+                    { jianpu: '5', name: '中音5', freq: 698.46, pitch: 'F5' },
+                    { jianpu: '6', name: '中音6', freq: 783.99, pitch: 'G5' },
+                    { jianpu: '7', name: '中音7', freq: 880.00, pitch: 'A5' },
+                    { jianpu: '1', name: '高音1', freq: 932.33, pitch: 'Bb5', isHigh: true },
+                    { jianpu: '2', name: '高音2', freq: 1046.50, pitch: 'C6', isHigh: true },
+                    { jianpu: '3', name: '高音3', freq: 1174.66, pitch: 'D6', isHigh: true },
+                    { jianpu: '4', name: '高音4', freq: 1244.51, pitch: 'Eb6', isHigh: true },
+                    { jianpu: '5', name: '高音5', freq: 1396.91, pitch: 'F6', isHigh: true },
+                    { jianpu: '6', name: '高音6', freq: 1567.98, pitch: 'G6', isHigh: true },
                 ]
             }
         };
 
-        let currentKey = 'G';
+        let currentKey = 'G5';
 
         function setKey(key, shouldSave = true) {
             currentKey = key;
@@ -1052,7 +1100,7 @@
             activeBtn.classList.add('active');
             activeBtn.setAttribute('aria-pressed', 'true');
             
-            document.querySelector('.tune-key').textContent = '当前调性：' + keyConfigs[key].name + '（简谱）';
+            document.querySelector('.tune-key').textContent = '当前：' + keyConfigs[key].fullName;
             
             if (shouldSave) saveSettings();
         }
